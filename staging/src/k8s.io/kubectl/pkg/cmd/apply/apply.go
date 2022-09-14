@@ -179,7 +179,10 @@ func NewCmdApply(baseName string, f cmdutil.Factory, ioStreams genericclioptions
 			cmdutil.CheckErr(validatePruneAll(o.Prune, o.All, o.Selector))
 			cmdutil.CheckErr(o.Run())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
+
+	cmdutil.AddClowntownFlags(cmd)
 
 	// bind flag structs
 	o.DeleteFlags.AddFlags(cmd)

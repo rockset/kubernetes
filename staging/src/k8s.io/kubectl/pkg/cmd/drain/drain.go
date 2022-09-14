@@ -74,7 +74,10 @@ func NewCmdCordon(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cob
 			cmdutil.CheckErr(o.Complete(f, cmd, args))
 			cmdutil.CheckErr(o.RunCordonOrUncordon(true))
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
+	cmdutil.AddClowntownFlags(cmd)
+
 	cmd.Flags().StringVarP(&o.drainer.Selector, "selector", "l", o.drainer.Selector, "Selector (label query) to filter on")
 	cmdutil.AddDryRunFlag(cmd)
 	return cmd

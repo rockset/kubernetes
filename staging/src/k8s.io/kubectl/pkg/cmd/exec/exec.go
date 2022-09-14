@@ -96,7 +96,10 @@ func NewCmdExec(f cmdutil.Factory, streams genericclioptions.IOStreams) *cobra.C
 			cmdutil.CheckErr(options.Validate())
 			cmdutil.CheckErr(options.Run())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
+
+	cmdutil.AddClowntownFlags(cmd)
 	cmdutil.AddPodRunningTimeoutFlag(cmd, defaultPodExecTimeout)
 	cmdutil.AddJsonFilenameFlag(cmd.Flags(), &options.FilenameOptions.Filenames, "to use to exec into the resource")
 	// TODO support UID
