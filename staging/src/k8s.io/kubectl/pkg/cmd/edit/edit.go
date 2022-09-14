@@ -17,13 +17,17 @@ limitations under the License.
 package edit
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"strings"
+	"time"
 
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 	"k8s.io/kubectl/pkg/cmd/util/editor"
 	"k8s.io/kubectl/pkg/util/i18n"
 	"k8s.io/kubectl/pkg/util/templates"
+	utilexec "k8s.io/utils/exec"
 )
 
 var (
@@ -80,7 +84,47 @@ func NewCmdEdit(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra
 			cmdutil.CheckErr(o.Complete(f, args, cmd))
 			cmdutil.CheckErr(o.Run())
 		},
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			context, _ := cmd.Flags().GetString("context")
+			clowntown, _ := cmd.Flags().GetBool("clowntown")
+			officeHours, _ := cmd.Flags().GetBool("office-hours")
+
+			if isProdContext(context) && !clowntown {
+				return utilexec.CodeExitError{
+					Err: fmt.Errorf("why are you editing resources by hand? " +
+						"you must use --clowntown if you are REALLY sure you know what you're doing 🤡"),
+					Code: 1,
+				}
+			}
+
+			if clowntown && isProdContext(context) {
+				fmt.Fprintf(cmd.OutOrStdout(), "🤡 --clowntown in use, I hope you know what you're doing 🤡\n")
+			}
+
+			now := time.Now()
+			if pst, err := time.LoadLocation("America/Los_Angeles"); err != nil {
+				now = now.In(pst)
+			}
+
+			if !isOfficeHours(now) && !officeHours && isProdContext(context) {
+				return utilexec.CodeExitError{
+					Err: fmt.Errorf("why are you editing resources by hand outside office hours? " +
+						"you must use --office-hours if you are REALLY sure you know what you're doing ⏰"),
+					Code: 1,
+				}
+
+			}
+
+			if officeHours && isProdContext(context) {
+				fmt.Fprintf(cmd.OutOrStdout(), "⏰ --office-hours in use, I hope you know what you're doing ⏰\n")
+			}
+
+			return nil
+		},
 	}
+
+	cmd.Flags().Bool("clowntown", false, "required for hand-editing")
+	cmd.Flags().Bool("office-hours", false, "required for hand-editing outside office hours")
 
 	// bind flag structs
 	o.RecordFlags.AddFlags(cmd)
@@ -95,4 +139,12 @@ func NewCmdEdit(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra
 	cmdutil.AddFieldManagerFlagVar(cmd, &o.FieldManager, "kubectl-edit")
 	cmdutil.AddApplyAnnotationVarFlags(cmd, &o.ApplyAnnotation)
 	return cmd
+}
+
+func isOfficeHours(now time.Time) bool {
+	return now.Hour() > 9 && now.Hour() < 18 && now.Weekday() > 0 && now.Weekday() < 6
+}
+
+func isProdContext(c string) bool {
+	return !strings.HasPrefix(c, "dev-")
 }
