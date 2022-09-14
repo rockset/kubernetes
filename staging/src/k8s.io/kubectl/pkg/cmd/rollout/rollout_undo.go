@@ -94,7 +94,9 @@ func NewCmdRolloutUndo(f cmdutil.Factory, streams genericclioptions.IOStreams) *
 			cmdutil.CheckErr(o.Validate())
 			cmdutil.CheckErr(o.RunUndo())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
+	cmdutil.AddClowntownFlags(cmd)
 
 	cmd.Flags().Int64Var(&o.ToRevision, "to-revision", o.ToRevision, "The revision to rollback to. Default to 0 (last revision).")
 	usage := "identifying the resource to get from a server."

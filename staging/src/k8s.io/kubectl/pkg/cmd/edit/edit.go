@@ -18,7 +18,6 @@ package edit
 
 import (
 	"github.com/spf13/cobra"
-
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 	"k8s.io/kubectl/pkg/cmd/util/editor"
@@ -84,7 +83,9 @@ func NewCmdEdit(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra
 			cmdutil.CheckErr(o.Validate())
 			cmdutil.CheckErr(o.Run())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
+	cmdutil.AddClowntownFlags(cmd)
 
 	// bind flag structs
 	o.RecordFlags.AddFlags(cmd)

@@ -128,8 +128,10 @@ func NewCmdPatch(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobr
 			cmdutil.CheckErr(o.Validate())
 			cmdutil.CheckErr(o.RunPatch())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
 
+	cmdutil.AddClowntownFlags(cmd)
 	o.RecordFlags.AddFlags(cmd)
 	o.PrintFlags.AddFlags(cmd)
 

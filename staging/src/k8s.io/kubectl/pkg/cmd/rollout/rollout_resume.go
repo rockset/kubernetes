@@ -94,8 +94,11 @@ func NewCmdRolloutResume(f cmdutil.Factory, streams genericclioptions.IOStreams)
 			cmdutil.CheckErr(o.Validate())
 			cmdutil.CheckErr(o.RunResume())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
 
+	cmdutil.AddClowntownFlags(cmd)
+	
 	usage := "identifying the resource to get from a server."
 	cmdutil.AddFilenameOptionFlags(cmd, &o.FilenameOptions, usage)
 	cmdutil.AddFieldManagerFlagVar(cmd, &o.fieldManager, "kubectl-rollout")
