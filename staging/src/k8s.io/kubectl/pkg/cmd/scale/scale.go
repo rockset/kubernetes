@@ -120,8 +120,10 @@ func NewCmdScale(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobr
 			cmdutil.CheckErr(o.Validate(cmd))
 			cmdutil.CheckErr(o.RunScale())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
 
+	cmdutil.AddClowntownFlags(cmd)
 	o.RecordFlags.AddFlags(cmd)
 	o.PrintFlags.AddFlags(cmd)
 

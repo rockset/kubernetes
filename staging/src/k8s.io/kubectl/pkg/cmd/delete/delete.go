@@ -152,9 +152,11 @@ func NewCmdDelete(f cmdutil.Factory, streams genericclioptions.IOStreams) *cobra
 			cmdutil.CheckErr(o.Validate())
 			cmdutil.CheckErr(o.RunDelete(f))
 		},
+		PreRunE:    cmdutil.Clowntown,
 		SuggestFor: []string{"rm"},
 	}
 
+	cmdutil.AddClowntownFlags(cmd)
 	deleteFlags.AddFlags(cmd)
 	cmdutil.AddDryRunFlag(cmd)
 

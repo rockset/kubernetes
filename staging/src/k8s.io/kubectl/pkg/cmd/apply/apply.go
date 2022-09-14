@@ -196,9 +196,11 @@ func NewCmdApply(baseName string, f cmdutil.Factory, ioStreams genericclioptions
 			cmdutil.CheckErr(o.Validate(cmd, args))
 			cmdutil.CheckErr(o.Run())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
 
 	flags.AddFlags(cmd)
+	cmdutil.AddClowntownFlags(cmd)
 
 	// apply subcommands
 	cmd.AddCommand(NewCmdApplyViewLastApplied(flags.Factory, flags.IOStreams))

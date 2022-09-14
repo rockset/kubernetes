@@ -90,8 +90,10 @@ func NewCmdRolloutPause(f cmdutil.Factory, streams genericclioptions.IOStreams) 
 			cmdutil.CheckErr(o.Validate())
 			cmdutil.CheckErr(o.RunPause())
 		},
+		PreRunE: cmdutil.Clowntown,
 	}
 
+	cmdutil.AddClowntownFlags(cmd)
 	o.PrintFlags.AddFlags(cmd)
 
 	usage := "identifying the resource to get from a server."
